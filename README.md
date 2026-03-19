@@ -114,7 +114,7 @@
 ### 1. Business Performance Overview
 > Sales trend 2011–2014, category breakdown, return rates, segment comparison.
 
-![Business Performance Overview](images/1_overview.png)
+![Business Performance Overview](images/1_overviwe.png)
 
 ---
 
