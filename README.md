@@ -8,59 +8,9 @@
 > A full-stack data analytics project on global retail data (2011–2014) — from raw CSV ingestion through SQL Star Schema design and Python EDA, to a 5-page interactive Power BI dashboard with actionable business insights.
 
 ---
-## 🎯 Problem Statement
-
-Retail businesses often struggle with hidden profitability issues despite strong sales growth. High revenue does not always translate into high profit due to factors like excessive discounting, product returns, inefficient logistics, and regional cost variations.
-
-The objective of this project is to analyze a global retail dataset to identify:
-
-- Where the business is making or losing money  
-- Which factors are driving profit erosion  
-- Which products, regions, and customers contribute to losses  
-- Operational inefficiencies impacting overall performance  
-
-This analysis aims to uncover **data-driven insights** that can help stakeholders improve profitability, optimize operations, and make better strategic decisions.
-
-## 💼 Why This Analysis Matters
-
-In a competitive retail environment, relying on revenue alone can be misleading. Businesses need to understand **profit drivers and leakages** at a granular level.
-
-This project addresses key real-world business challenges:
-
-- 📉 Identifying **profit leakage** caused by over-discounting and returns  
-- 📦 Improving **operational efficiency** by analyzing shipping delays  
-- 🌍 Understanding **regional performance differences**  
-- 👤 Detecting **unprofitable customer behavior**  
-- 📊 Enabling **data-driven decision making** instead of intuition  
-
-By solving these problems, the analysis helps transform raw transactional data into **actionable business strategies**.
-
-## 📦 Dataset Overview
-
-- **Source:** Kaggle — Superstore Global Sales Dataset  
-- **Time Period:** 2011 to 2014  
-- **Records:** ~50,000+ transactions  
-- **Type:** Retail transactional data  
-
-### Key Features:
-
-- **Order Details:** Order ID, Order Date, Ship Date  
-- **Customer Info:** Customer Name, Segment, Region  
-- **Product Info:** Category, Sub-category, Product Name  
-- **Sales Metrics:** Sales, Profit, Quantity, Discount  
-- **Operational Data:** Shipping Mode, Shipping Cost  
-- **Returns Data:** Returned orders indicator  
-
-### Data Characteristics:
-
-- Sales and shipping costs are **right-skewed** (few high-value orders)  
-- Profit contains both **high gains and significant losses**  
-- Discounts are applied in **discrete levels (0%, 20%, 50%)**  
-- Returns impact both **revenue and profitability**  
-
-This dataset simulates a real-world retail environment, making it ideal for end-to-end data analysis and business decision modeling.
 
 ## 🚀 Key Highlights
+*A quick summary of the project, tools, and key business impact.*
 
 - Built a **complete end-to-end pipeline**: CSV → SQL Star Schema → Python → Power BI
 - Designed a **relational data model** with 1 fact table + 3 dimension tables
@@ -83,6 +33,18 @@ This dataset simulates a real-world retail environment, making it ideal for end-
 | Total Orders | 25K+ |
 | Total Customers | 1,590 |
 | Return Rate | 4.68% |
+
+---
+
+## 💼 Business Value
+*Translating data into decisions that directly impact the bottom line.*
+
+| What It Enables | How |
+|---|---|
+| **Identify profit leakage** | Pinpoint exactly which products, regions, and discount levels are destroying margin |
+| **Optimise discount strategy** | Enforce data-backed pricing rules that eliminate loss-making orders at the source |
+| **Improve operational efficiency** | Reduce late shipments and return costs that quietly erode profit every quarter |
+| **Drive data-based decisions** | Replace gut-feel pricing and logistics calls with evidence from 25K+ order records |
 
 ---
 
@@ -109,63 +71,72 @@ This dataset simulates a real-world retail environment, making it ideal for end-
 ---
 
 ## 🧠 Design Decisions
+*Intentional architectural choices — not just execution, but thinking like a data professional.*
 
-| Decision | Reason |
+| Decision | Why |
 |---|---|
-| **Star Schema** over flat table | Better query performance, reduced redundancy, scalable for Power BI relationships |
-| **Modular SQL scripts** per domain | Independently readable, testable, and maintainable — not one monolithic file |
-| **SQL queries reused in Python** via SQLAlchemy | Ensures visualisation layer stays consistent with database logic |
-| **Date dimension table** in Power BI | Enables proper time-series filtering and time intelligence functions |
+| **Star Schema** over flat table | Better query performance, reduced redundancy, and scalable for Power BI relationships |
+| **Modular SQL scripts** per domain | Each script is independently readable, testable, and maintainable — not one monolithic file |
+| **SQL queries reused in Python** via SQLAlchemy | Ensures the visualisation layer always stays consistent with the database logic |
+| **Date dimension table** in Power BI | Enables proper time-series filtering and time intelligence DAX functions |
 
 ---
 
-## 🗄️ Database Schema
+## 🗄️ Database Schema (Star Schema)
 
 ```
-                 ┌─────────────┐              ┌─────────────┐
-                 │  Products   │              │   Returns   │
-                 │─────────────│              │─────────────│
-                 │ product_id  │              │  return_id  │
-                 │ product_name│              │  returned   │
-                 │ category    │              └──────┬──────┘
-                 │ sub_category│                     │ 1:N
-                 └──────┬──────┘                     │
-                        │ 1:N          ┌─────────────▼──────────────┐
-                        └─────────────►│        orders (FACT)        │
-                                       │────────────────────────────│
-                 ┌─────────────┐       │ order_id (PK)              │
-                 │  Customers  │       │ product_id (FK)            │
-                 │─────────────│       │ customer_id (FK)           │
-                 │ customer_id ├──────►│ return_id (FK)             │
-                 │ customer_name│      │ order_date · ship_date     │
-                 │ segment     │       │ sales · profit · discount  │
-                 │ region      │       │ quantity · shipping_cost   │
-                 └─────────────┘       │ ship_mode                  │
-                                       └────────────────────────────┘
+          ┌──────────────┐                    ┌─────────────┐
+          │   Products   │                    │   Returns   │
+          │──────────────│                    │─────────────│
+          │ product_id PK│                    │ return_id PK│
+          │ product_name │                    │ returned    │
+          │ category     │                    └──────┬──────┘
+          │ sub_category │                           │ 1:N
+          └──────┬───────┘                           │
+                 │ 1:N              ┌────────────────▼───────────────┐
+                 └─────────────────►│          orders (FACT)          │
+                                    │────────────────────────────────│
+          ┌──────────────┐          │ order_id      (PK)             │
+          │  Customers   │          │ product_id    (FK)             │
+          │──────────────│          │ customer_id   (FK)             │
+          │ customer_id  ├─────────►│ return_id     (FK)             │
+          │ customer_name│          │ order_date  · ship_date        │
+          │ segment      │          │ sales · profit · discount      │
+          │ region       │          │ quantity · shipping_cost       │
+          └──────────────┘          │ ship_mode                      │
+                                    └────────────────────────────────┘
+          ┌──────────────┐
+          │  Dates(PBI)  │ ← Built in Power BI from order_date
+          │──────────────│
+          │ order_date PK│
+          │ month · year │
+          └──────────────┘
 ```
 
 ---
 
 ## 📓 Analysis Modules
+*Each domain has a paired SQL script and Python notebook — modular and independently runnable.*
 
 | # | Module | Key Output |
 |---|---|---|
-| 1.1 | Exploratory Data Analysis | Correlation matrix, distribution analysis. Profit–discount correlation = –0.32 |
-| 1.2 | Sales & Profit Analysis | YoY & MoM trends. 51.54% growth. Technology = highest margin; Furniture = lowest |
-| 1.3 | Regional & Geographic Analysis | Central leads volume. Canada = best margins. SE Asia & EMEA show profit gap |
-| 1.4 | Customer Segment Analysis | Consumer segment leads. Flagged loss-generating customer accounts |
-| 1.5 | Discount & Profitability Analysis | **25% breakeven threshold** defined. Above this = consistent losses |
-| 1.6 | Return Analysis | 4.68% return rate → $100K+ lost profit. Furniture = 6% return rate (highest) |
-| 1.7 | Shipping & Operations Analysis | 9,312 late shipments. Standard Class = $7.6M sales. Late orders = lower profit |
+| 1.1 | Exploratory Data Analysis | Correlation matrix, distribution analysis, data cleaning. Profit–discount correlation of –0.32; sales highly right-skewed |
+| 1.2 | Sales & Profit Analysis | YoY & MoM trend engineering. Confirmed 51.54% YoY growth. Technology = highest margin; Furniture = lowest |
+| 1.3 | Regional & Geographic Analysis | Central region leads volume. Canada = highest profit margin %. Southeast Asia & EMEA show high sales but near-zero margin |
+| 1.4 | Customer Segment Analysis | Consumer segment drives most revenue. Identified top-value customers and flagged loss-generating accounts for review |
+| 1.5 | Discount & Profitability Analysis | Defined the **25% discount breakeven threshold**. Discounts above this consistently generate losses — enforcing this limit can significantly improve overall margins |
+| 1.6 | Return Analysis | 4.68% return rate eroding $800K+ in sales and $100K+ in profit. Furniture has the highest return rate (6%) — addressing it would directly protect annual profitability |
+| 1.7 | Shipping & Operations Analysis | 9,312 late shipments (>5 days). Standard Class drives $7.6M in sales. Reducing late orders in the Central region would meaningfully improve total profit |
 
 ---
 
 ## 📊 Dashboard Preview
+*5-page interactive Power BI dashboard with DAX measures, cross-page slicers, and drill-down capabilities.*
 
 ### 1. Business Performance Overview
 > Sales trend 2011–2014, category breakdown, return rates, segment comparison.
 
-![Business Performance Overview](images/1_overviwe.png)
+![Business Performance Overview](images/1_overview.png)
 
 ---
 
@@ -199,45 +170,63 @@ This dataset simulates a real-world retail environment, making it ideal for end-
 
 ## ⚠️ Key Business Problems Identified
 
-- 📉 **Over-discounting causing negative margins** — especially in Furniture and Tables (~30% avg discount)
-- 🗑️ **Loss-making products still actively sold** — Tables and select Furniture lines generate losses per order
-- 🔁 **High return cost in Furniture** — 6% return rate eroding $100K+ in annual profit
-- ⏰ **9,312 late shipments reducing profitability** — concentrated in the Central region
-- 🌍 **Regional inefficiencies** — SE Asia & EMEA high revenue, near-zero margins
-- 👤 **Unprofitable customer accounts** — high-volume customers generating net losses via uncapped discounts
+- 📉 **Over-discounting causing negative margins** — discounts regularly exceed the 25% loss threshold, especially in Furniture where Tables average ~30% discount
+- 🗑️ **Loss-making products still actively sold** — items like Tables and select Furniture lines generate consistent losses per order due to over-discounting
+- 🔁 **High return cost in Furniture** — 6% return rate eroding $100K+ in annual profit, concentrated in the Central region
+- ⏰ **9,312 late shipments reducing profitability** — delayed orders show measurably lower profit vs on-time fulfilment, worst in the Central region
+- 🌍 **Regional inefficiencies** — Southeast Asia & EMEA generate high revenue but near-zero margins due to discount and logistics costs
+- 👤 **Unprofitable customer accounts** — certain high-volume customers generate net losses for the business due to uncapped discount usage
 
 ---
 
 ## 💡 Key Findings
 
-1. **Revenue grew from $2.3M → $4.3M (2011–2014)** with a consistent Q4 seasonal peak every year
-2. **Technology leads margins; Furniture bleeds** — Furniture's discounting + 6% return rate hurt profitability despite $4.7M in sales
-3. **Discounts above 25% consistently generate losses** — enforcing this threshold can significantly improve overall profit margins
-4. **SE Asia & EMEA profit gap** — high sales with near-zero margins due to elevated discount rates and shipping costs
-5. **Returns cost $100K+ annually** — a 4.68% return rate has eroded $800K+ in sales; reducing Furniture returns would directly protect profit
-6. **9,312 late shipments drain profitability** — late orders generate measurably lower profit, problem concentrated in the Central region
+**1. Steady Revenue Growth — $2.3M → $4.3M (2011–2014)**
+Consistent 4-year expansion at 51.54% YoY growth, with a predictable and sharp November–December seasonal peak each year.
+
+**2. Technology Leads; Furniture Bleeds**
+Technology is the highest-margin category. Furniture generates $4.7M in sales but has the weakest margins — damaged by aggressive discounting and a 6% return rate that together erode profitability.
+
+**3. 25% Discount = The Loss Threshold**
+Discounts above 25% consistently generate negative profit margins — enforcing this threshold across all product lines can eliminate loss-making orders and significantly improve overall profitability.
+
+**4. Southeast Asia & EMEA — Profit Gap**
+Both regions show high sales volume but near-zero margins. Driven by above-average discount rates and elevated shipping costs — high revenue here is a liability, not an asset, without cost restructuring.
+
+**5. Returns Cost $100K+ in Annual Profit**
+A 4.68% return rate has eroded $800K+ in sales. Furniture's 6% return rate is the highest category — reducing it through better product descriptions and packaging would directly protect annual profit.
+
+**6. 9,312 Late Shipments Drain Profitability**
+Late orders (>5 days) generate measurably lower profit than on-time orders. The problem is concentrated in the Central region — the busiest market, most operationally strained.
 
 ---
 
 ## ✅ Business Recommendations
 
-| # | Action | Impact |
-|---|---|---|
-| 1 | **Enforce hard 25% discount cap** | Eliminates loss-making orders; recovers significant Furniture margin |
-| 2 | **Fix SE Asia & EMEA unit economics** | Discount + logistics review before scaling further |
-| 3 | **Reduce Furniture return rate** | Better packaging and product descriptions → protect $100K+ annual profit |
-| 4 | **Fix late shipments in Central region** | Invest in fulfilment capacity; pre-position inventory before Q4 |
-| 5 | **Audit loss-generating customer accounts** | Review discount access for high-volume, negative-profit customers |
+**1. 🚫 Enforce a Hard 25% Discount Cap**
+Tables average ~30% discount; select items reach 70–80% — all sold at a direct loss. A system-wide ceiling at 25% would eliminate loss-making orders and recover significant margin, especially in Furniture.
+
+**2. 🌏 Fix SE Asia & EMEA Unit Economics**
+High sales with near-zero margins is a liability, not growth. A discount and logistics cost review must happen before scaling these regions further.
+
+**3. 📦 Reduce Furniture Return Rate**
+At 6%, Furniture's return rate is the highest category and most recoverable. Improving product descriptions, packaging, and large-item shipping quality could recover a significant share of the $100K+ annual return loss.
+
+**4. ⏱️ Fix Late Shipments in the Central Region**
+Invest in Central region fulfilment capacity. Pre-position inventory before Q4 peaks. Late orders directly reduce per-order profit at the company's highest-volume, highest-risk market.
+
+**5. 🎯 Audit Loss-Generating Customer Accounts**
+High sales, negative profit customers should have discount access reviewed individually. The issue is uncapped discounting — not the customers. Fixing the pricing agreements protects margin without losing the relationship.
 
 ---
 
 ## 📌 Sample SQL Queries
 
+**Sales & Profit by Category**
 ```sql
--- Sales & Profit by Category
 SELECT p.category,
-       SUM(o.sales)  AS total_sales,
-       SUM(o.profit) AS total_profit,
+       SUM(o.sales)   AS total_sales,
+       SUM(o.profit)  AS total_profit,
        ROUND(SUM(o.profit) / SUM(o.sales) * 100, 2) AS profit_margin_pct
 FROM orders o
 JOIN products p ON o.product_id = p.product_id
@@ -245,8 +234,8 @@ GROUP BY p.category
 ORDER BY total_profit DESC;
 ```
 
+**Identifying the Discount Loss Threshold**
 ```sql
--- Identifying the Discount Loss Threshold
 SELECT
     CASE
       WHEN discount = 0      THEN 'No Discount'
@@ -254,7 +243,7 @@ SELECT
       WHEN discount <= 0.25  THEN '20–25%'
       ELSE                        'Above 25% (Loss Zone)'
     END AS discount_bucket,
-    COUNT(*)          AS order_count,
+    COUNT(*)              AS order_count,
     ROUND(SUM(profit), 2) AS total_profit
 FROM orders
 GROUP BY discount_bucket
@@ -287,6 +276,14 @@ ORDER BY total_profit DESC;
 ```
 superstore-analytics/
 │
+├── README.md
+├── images/
+│   ├── 1_overview.png
+│   ├── 2_product_profit.png
+│   ├── 3_customer.png
+│   ├── 4_regional.png
+│   └── 5_loss_making.png
+│
 ├── SQL/
 │   ├── 0_Data_Preparation.sql
 │   ├── 01_Data_validation.sql
@@ -306,13 +303,10 @@ superstore-analytics/
 │   ├── 1.6_Return_analysis.ipynb
 │   └── 1.7_Shipping_&_Operation_Analysis.ipynb
 │
-├── PowerBI/
-│   └── Superstore_Dashboard.pbix
-│
-├── images/                 
-└── README.md
+└── PowerBI/
+    └── Superstore_Dashboard.pbix
 ```
 
 ---
 
-*Superstore Analytics · SQL · Python · Power BI · Kaggle Dataset 2011–2014*
+*Superstore Analytics · SQL · Python · Power BI · Kaggle Superstore Dataset · 2011–2014*
