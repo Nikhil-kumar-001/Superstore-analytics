@@ -8,6 +8,57 @@
 > A full-stack data analytics project on global retail data (2011–2014) — from raw CSV ingestion through SQL Star Schema design and Python EDA, to a 5-page interactive Power BI dashboard with actionable business insights.
 
 ---
+## 🎯 Problem Statement
+
+Retail businesses often struggle with hidden profitability issues despite strong sales growth. High revenue does not always translate into high profit due to factors like excessive discounting, product returns, inefficient logistics, and regional cost variations.
+
+The objective of this project is to analyze a global retail dataset to identify:
+
+- Where the business is making or losing money  
+- Which factors are driving profit erosion  
+- Which products, regions, and customers contribute to losses  
+- Operational inefficiencies impacting overall performance  
+
+This analysis aims to uncover **data-driven insights** that can help stakeholders improve profitability, optimize operations, and make better strategic decisions.
+
+## 💼 Why This Analysis Matters
+
+In a competitive retail environment, relying on revenue alone can be misleading. Businesses need to understand **profit drivers and leakages** at a granular level.
+
+This project addresses key real-world business challenges:
+
+- 📉 Identifying **profit leakage** caused by over-discounting and returns  
+- 📦 Improving **operational efficiency** by analyzing shipping delays  
+- 🌍 Understanding **regional performance differences**  
+- 👤 Detecting **unprofitable customer behavior**  
+- 📊 Enabling **data-driven decision making** instead of intuition  
+
+By solving these problems, the analysis helps transform raw transactional data into **actionable business strategies**.
+
+## 📦 Dataset Overview
+
+- **Source:** Kaggle — Superstore Global Sales Dataset  
+- **Time Period:** 2011 to 2014  
+- **Records:** ~50,000+ transactions  
+- **Type:** Retail transactional data  
+
+### Key Features:
+
+- **Order Details:** Order ID, Order Date, Ship Date  
+- **Customer Info:** Customer Name, Segment, Region  
+- **Product Info:** Category, Sub-category, Product Name  
+- **Sales Metrics:** Sales, Profit, Quantity, Discount  
+- **Operational Data:** Shipping Mode, Shipping Cost  
+- **Returns Data:** Returned orders indicator  
+
+### Data Characteristics:
+
+- Sales and shipping costs are **right-skewed** (few high-value orders)  
+- Profit contains both **high gains and significant losses**  
+- Discounts are applied in **discrete levels (0%, 20%, 50%)**  
+- Returns impact both **revenue and profitability**  
+
+This dataset simulates a real-world retail environment, making it ideal for end-to-end data analysis and business decision modeling.
 
 ## 🚀 Key Highlights
 
