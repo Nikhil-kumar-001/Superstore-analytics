@@ -258,7 +258,7 @@ superstore-analytics/
 ├── PowerBI/
 │   └── Superstore_Dashboard.pbix
 │
-├── images/                  # Add dashboard screenshots here
+├── images/                 
 └── README.md
 ```
 
