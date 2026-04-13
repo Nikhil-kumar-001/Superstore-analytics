@@ -125,7 +125,7 @@ This dataset simulates a real-world retail environment, making it ideal for end-
 ## 🗄️ Database Schema
 
 ```
-                         ┌─────────────┐              ┌─────────────┐
+                 ┌─────────────┐              ┌─────────────┐
                  │  Products   │              │   Returns   │
                  │─────────────│              │─────────────│
                  │ product_id  │              │ return_id   │
